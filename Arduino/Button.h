@@ -1,7 +1,7 @@
 #define Time_StartLongPressMS 5000    //After howmuch Ms we should consider a press a long press
 #define Time_ESPrestartMS 10000       //After howmuch Ms we should restart the ESP, note this is only triggered on released, or on a CheckButtons() call
-#define Time_StartDoublePress 250     //Withing howmuch Ms of the last release should the button be pressed for it to be a double press?
-#define Time_RejectStarts 10        //Just some rejection
+#define Time_StartDoublePress 500     //Withing howmuch Ms of the last release should the button be pressed for it to be a double press?
+#define Time_RejectStarts 50          //Just some rejection
 struct buttons {
   byte PIN_Button;
   byte PIN_LED;
@@ -10,11 +10,12 @@ struct buttons {
 struct Button_Time {
   bool StartPress;      //Triggered once on start press
   bool StartLongPress;  //Triggered once if timePressed > LongPress
-  bool Pressed;         //if button is pressed
-  bool PressedLong;     //if timePressed > LongPress
-  bool PressEnded;      //if button was pressed but isn't
   bool StartDoublePress;//Triggered once on start press if the last button was les then DoublePress time ago
   bool StartRelease;    //Triggered once on stop press
+  bool Pressed;         //If button is pressed
+  bool PressedLong;     //If timePressed > LongPress
+  bool DoublePress;     //If this press is a double press
+  bool PressEnded;      //If button was pressed but isn't
   int PressedTime;      //How long the button is pressed (in MS)
 };
 
@@ -54,6 +55,7 @@ class Button {
       State.StartRelease = false;
       State.StartDoublePress = false;
       if (State.PressEnded) {
+        State.DoublePress = false;
         State.Pressed = false;
         State.PressedTime = 0;
         if (!StartReleaseFlagged) {
@@ -77,8 +79,11 @@ class Button {
         unsigned long ElapsedTimeSinceLast = ButtonStartTime - LastButtonEndTime;
         if (ElapsedTimeSinceLast > Time_RejectStarts) {
           State.StartPress = true;
-          if (ElapsedTimeSinceLast < Time_StartDoublePress)
+          if (ElapsedTimeSinceLast < Time_StartDoublePress) {
+            Serial.println("--" + String(ElapsedTimeSinceLast));
             State.StartDoublePress = true;
+            State.DoublePress = true;
+          }
         }
       } else if (millis() - ButtonStartTime > Time_ESPrestartMS) {//If the button was pressed longer than 10 seconds
         ESP.restart();                                            //Restart the ESP

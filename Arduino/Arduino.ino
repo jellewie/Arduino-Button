@@ -21,10 +21,14 @@ void loop() {
   Serial.print(Value.PressedLong);
   Serial.print(" D");
   Serial.print(Value.StartDoublePress);
+  Serial.print("_");
+  Serial.print(Value.DoublePress);
   Serial.print(" R");
   Serial.print(Value.StartRelease);
+  Serial.print("_");
+  Serial.print(Value.PressEnded);
   Serial.print(" ");
-  
+
   Serial.print(Value.PressedTime);
   Serial.print(" ");
   Serial.println();
