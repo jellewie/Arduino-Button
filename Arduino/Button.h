@@ -12,9 +12,9 @@ struct Button_Time {
   bool StartLongPress;  //Triggered once if timePressed > LongPress
   bool Pressed;         //if button is pressed
   bool PressedLong;     //if timePressed > LongPress
-  bool PressEnded;      //
-  bool StartDoublePress;//
-  bool StartRelease;    //
+  bool PressEnded;      //if button was pressed but isn't
+  bool StartDoublePress;//Triggered once on start press if the last button was les then DoublePress time ago
+  bool StartRelease;    //Triggered once on stop press
   int PressedTime;      //How long the button is pressed (in MS)
 };
 
