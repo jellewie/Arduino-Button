@@ -11,12 +11,16 @@
 
 #include "Button/Button.h"                              //https://github.com/jellewie/Arduino-Button
 
-Button ButtonsA = buttons({26, LED_BUILTIN});
-//Button ButtonsA[2] = {buttons({11, 12}), buttons({13, 14})};  //Example of declairing an array of buttons, This also sets the pinmode to 'INPUT/OUTPUT'
+Button ButtonsA = 26;                                   //Example of creating a single basic button on a pin
+//Button ButtonsA = {26, _PIN_LED: LED_BUILTIN};          //Example of creating a button with a LED (of which the pinMode will be set, the state can be changed with a digitalWrite(ButtonsA.PIN_LED, HIGH)
+//Button ButtonsA = {26, INPUT_PULLUP};                   //Example of creating a button with internal pullup
+//Button ButtonsA = {26, INPUT_PULLUP, LED_BUILTIN};      //Example of creating a button with internal pullup + LED pin
+//Button ButtonsA[2] = {{26}, {27, {_PIN_LED:5}}};        //Example of creating an array of buttons, an 'attachInterrupt' needs to be created for eacht one!
 
 void setup() {
   Serial.begin(115200);                                 //Since we defided we want serial feedback, we should start Serial at the desired speed
-  attachInterrupt(ButtonsA.Data.PIN_Button, ISR_ButtonsA, CHANGE);  //Attack an interupt to the pin, so we can simply keep track of pushes
+  attachInterrupt(ButtonsA.PIN_Button, ISR_ButtonsA, CHANGE); //Attach an interupt to the pin, so we can simply keep track of pushes
+  //attachInterrupt(ButtonsA[1].PIN_Button, ISR_ButtonsA, CHANGE); //An example when using a button array, Don't forget the 'ISR_ButtonsA' functions
 }
 void loop() {
   Button_Time Value = ButtonsA.CheckButton();           //Get the button state
