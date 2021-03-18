@@ -36,7 +36,7 @@ Button_Time Button::CheckButton() {
       State.StartRelease = true;
     }
   }
-#ifndef Button_SerialEnabled
+#ifdef Button_SerialEnabled
   Serial.println("BU:CheckButton="
                  "S" + String(State.StartPress) + "." + String(State.Pressed) + "_"
                  "L" + String(State.StartLongPress) + "." + String(State.PressedLong) + "_"
@@ -57,7 +57,7 @@ void Button::Pinchange() {
     StartLongFlagged = false;
     StartReleaseFlagged = false;
     unsigned long ElapsedTimeSinceLast = millis() - LastButtonEndTime;
-#ifndef Button_SerialEnabled
+#ifdef Button_SerialEnabled
     Serial.println("BU:Up TsinceLast=" + String(ElapsedTimeSinceLast));
 #endif //Button_SerialEnabled
     if (ElapsedTimeSinceLast > Time_RejectStarts) {
@@ -74,7 +74,7 @@ void Button::Pinchange() {
     State.PressEnded = true;
     State.PressedTime = millis() - ButtonStartTime;
     LastButtonEndTime = millis();
-#ifndef Button_SerialEnabled
+#ifdef Button_SerialEnabled
     Serial.println("BU:Down PressT=" + String(State.PressedTime));
 #endif //Button_SerialEnabled
   }
