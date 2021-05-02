@@ -1,11 +1,11 @@
 /* Written by JelleWho https://github.com/jellewie
    https://github.com/jellewie/Arduino-Button
 */
-Button::Button(const byte _PIN_Button, const byte ButtonPinMode, const byte _PIN_LED) {
+Button::Button(const byte _PIN_Button, const byte _ButtonPinMode, const byte _PIN_LED) {
   this->PIN_Button = _PIN_Button;                               //Set the pointer, so we point to the pins
   this->PIN_LED = _PIN_LED;                                     //Set the pointer, so we point to the pins
-  pinMode(PIN_Button, ButtonPinMode);                           //Set the button pin as INPUT
-  if (ButtonPinMode == INPUT_PULLUP) HighState = LOW;           //If we have an inverse button (Pushed is 0V/GNS, and released/default is HIGH)
+  pinMode(PIN_Button, _ButtonPinMode);                           //Set the button pin as INPUT
+  if (_ButtonPinMode == INPUT_PULLUP) HighState = LOW;           //If we have an inverse button (Pushed is 0V/GNS, and released/default is HIGH)
   if (PIN_LED != 0)                                             //If a LED pin is given
     pinMode(PIN_LED, OUTPUT);                                   //Set the LED pin as output
   Pinchange();                                                  //Init the pin, this will make sure it starts in the right HIGH or LOW state
