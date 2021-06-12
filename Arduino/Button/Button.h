@@ -35,15 +35,16 @@ struct Button_Time {
 };
 class Button {
   private:                                                      //Private variables/functions
+    bool OldState;
     bool HighState = HIGH;
     bool StartLongFlagged;
     bool StartReleaseFlagged = true;
-    unsigned long ButtonStartTime;                              //the button pressed time (to calculate long press)
-    unsigned long LastButtonEndTime;                            //To detect double presses
+    unsigned long ButtonStartTime = 0;                          //the button pressed time (to calculate long press)
+    unsigned long LastButtonEndTime = 0;                        //To detect double presses
     Button_Time State;
   public:                                                       //public variables/functions (these can be acces from the normal sketch)
     byte PIN_Button;                                            //To store the pointer to pins of this instance of button
-    byte PIN_LED;                           //^ but optional (0=unused)
+    byte PIN_LED;                                               //^ but optional (0=unused)
     Button(const byte _PIN_Button, const byte ButtonPinMode = INPUT, const byte _PIN_LED = 0); //Called to initialize
     Button_Time CheckButton();                                  //Call to recieve button state
     void Pinchange();                                           //Called with interupt on pin change

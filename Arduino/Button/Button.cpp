@@ -4,8 +4,8 @@
 Button::Button(const byte _PIN_Button, const byte _ButtonPinMode, const byte _PIN_LED) {
   this->PIN_Button = _PIN_Button;                               //Set the pointer, so we point to the pins
   this->PIN_LED = _PIN_LED;                                     //Set the pointer, so we point to the pins
-  pinMode(PIN_Button, _ButtonPinMode);                           //Set the button pin as INPUT
-  if (_ButtonPinMode == INPUT_PULLUP) HighState = LOW;           //If we have an inverse button (Pushed is 0V/GNS, and released/default is HIGH)
+  pinMode(PIN_Button, _ButtonPinMode);                          //Set the button pin as INPUT
+  if (_ButtonPinMode == INPUT_PULLUP) HighState = LOW;          //If we have an inverse button (Pushed is 0V/GNS, and released/default is HIGH)
   if (PIN_LED != 0)                                             //If a LED pin is given
     pinMode(PIN_LED, OUTPUT);                                   //Set the LED pin as output
   Pinchange();                                                  //Init the pin, this will make sure it starts in the right HIGH or LOW state
@@ -56,7 +56,12 @@ void Button::Pinchange() {
   //We do not need special overflow code here. Here I will show you with 4 bits as example
   //ButtonStartTime = 12(1100)    millis = 3(0011)    PressedTime should be = 7 (13,14,15,0,1,2,3 = 7 ticks)
   //PressedTime = millis() - ButtonStartTime[i] = 3-12=-9(1111 0111) overflow! = 7(0111)  Thus there is nothing to fix, it just works
-  if (digitalRead(PIN_Button) == HighState) {                   //If button is pressed
+  bool NewState = digitalRead(PIN_Button);                     //Filter all double reportings (Like twice UP after each other)
+  if (NewState == OldState)
+    return;
+  OldState = NewState;
+
+  if (NewState == HighState) {                                 //If button is pressed
     State.PressedTime = 0;
     State.Pressed = true;
     State.PressEnded = false;
@@ -64,7 +69,7 @@ void Button::Pinchange() {
     StartReleaseFlagged = false;
     unsigned long ElapsedTimeSinceLast = millis() - LastButtonEndTime;
 #ifdef Button_SerialEnabled
-    Serial.println("BU:Up TsinceLast=" + String(ElapsedTimeSinceLast));
+    Serial.println("BU:^T" + String(ElapsedTimeSinceLast));
 #endif //Button_SerialEnabled
     if (ElapsedTimeSinceLast > Time_RejectStarts) {
       ButtonStartTime = millis();                               //Save the start time
@@ -74,14 +79,14 @@ void Button::Pinchange() {
         State.DoublePress = true;
       }
     }
-  } else if (millis() - ButtonStartTime > Time_ESPrestartMS) {  //If the button was pressed longer than 10 seconds
-    ESP.restart();                                              //Restart the ESP
   } else {
     State.PressEnded = true;
     State.PressedTime = millis() - ButtonStartTime;
+    if (State.PressedTime > Time_ESPrestartMS)                  //If the button was pressed longer than 10 seconds
+      ESP.restart();                                            //Restart the ESP
     LastButtonEndTime = millis();
 #ifdef Button_SerialEnabled
-    Serial.println("BU:Down PressT=" + String(State.PressedTime));
+    Serial.println("BU:vT" + String(State.PressedTime));
 #endif //Button_SerialEnabled
   }
 }
